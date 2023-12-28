@@ -1,30 +1,28 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <NavBar />
+  <router-view />
 </template>
 
+<script>
+import NavBar from "@/components/NavBar.vue"
+//export default 相当于创建一个vue实例
+//setup 是将里面的变量函数中返回的对象会暴露给模板和组件实例
+export default {
+  components: {
+    NavBar,
+  }
+
+}
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
+/* .container{
+  display: flex;
+} */
+body {
+  background-image: url("@/assets/images/background.jpg");
+  background-size: cover;
+  margin: 0;
+  padding: 0
 }
 </style>

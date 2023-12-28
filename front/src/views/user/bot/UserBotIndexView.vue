@@ -1,5 +1,5 @@
 <template>
-    <ContentField>首页</ContentField>
+    <ContentField>我的bot</ContentField>
 </template>
 <script>
 import ContentField from "@/components/ContentField.vue"

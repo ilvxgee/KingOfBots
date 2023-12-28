@@ -1,5 +1,5 @@
 <template>
-    <ContentField>首页</ContentField>
+    <ContentField>排行榜</ContentField>
 </template>
 <script>
 import ContentField from "@/components/ContentField.vue"
