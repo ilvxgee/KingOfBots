@@ -1,8 +1,14 @@
 <template>
+
     <el-card class="box-card">
         <slot></slot>
     </el-card>
+
 </template>
+
+<script>
+</script>
+
 <style scoped>
 .text {
     font-size: 14px;
@@ -19,4 +25,3 @@
     margin-right: auto;
 }
 </style>
-  

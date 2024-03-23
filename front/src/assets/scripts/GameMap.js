@@ -33,7 +33,6 @@ export class GameMap extends AcGameObject {
             let x = sx + dx[i], y = sy + dy[i];
             if (!g[x][y] && this.check_connecttivity(g, x, y, tx, ty))
                 return true;
-
         }
         return false;
     }
