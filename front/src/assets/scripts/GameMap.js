@@ -3,11 +3,13 @@ import { Snake } from "./Snake";
 import { Wall } from "./Wall";
 
 export class GameMap extends AcGameObject {
-    constructor(ctx, parent) {
+    constructor(ctx, parent, store) {
         super();
 
         this.ctx = ctx;
         this.parent = parent;
+
+        this.store = store;
         this.L = 0;
 
         this.rows = 13;
@@ -24,54 +26,58 @@ export class GameMap extends AcGameObject {
 
     }
 
-    check_connecttivity(g, sx, sy, tx, ty) {
-        if (sx == tx && sy == ty) return true;
-        g[sx][sy] = true;
+    // check_connecttivity(g, sx, sy, tx, ty) {
+    //     if (sx == tx && sy == ty) return true;
+    //     g[sx][sy] = true;
 
-        let dx = [-1, 0, 1, 0], dy = [0, 1, 0, -1];
-        for (let i = 0; i < 4; i++) {
-            let x = sx + dx[i], y = sy + dy[i];
-            if (!g[x][y] && this.check_connecttivity(g, x, y, tx, ty))
-                return true;
-        }
-        return false;
-    }
+    //     let dx = [-1, 0, 1, 0], dy = [0, 1, 0, -1];
+    //     for (let i = 0; i < 4; i++) {
+    //         let x = sx + dx[i], y = sy + dy[i];
+    //         if (!g[x][y] && this.check_connecttivity(g, x, y, tx, ty))
+    //             return true;
+    //     }
+    //     return false;
+    // }
 
 
 
     create_walls() {
-        // new Wall(0, 0, this);
-        const g = [];
-        for (let r = 0; r < this.rows; r++) {
-            g[r] = [];
-            for (let c = 0; c < this.cols; c++) {
-                g[r][c] = false;
-            }
-        }
-        //给四周加上障碍物
-        for (let r = 0; r < this.rows; r++) {
-            g[r][0] = g[r][this.cols - 1] = true;
-        }
-        for (let c = 0; c < this.cols; c++) {
-            g[0][c] = g[this.rows - 1][c] = true;
-        }
-        //创建随机障碍物
-        for (let i = 0; i < this.inner_walls_count / 2; i++) {
-            for (let j = 0; j < 1000; j++) {
-                let r = parseInt(Math.random() * this.rows);
-                let c = parseInt(Math.random() * this.cols);
-                if (g[r][c] || g[this.rows - 1 - r][this.cols - 1 - c]) continue;
-                if (r == this.rows - 2 && c == 1 || r == 1 && c == this.cols - 2)
-                    continue;
-                g[r][c] = g[this.rows - 1 - r][this.cols - 1 - c] = true;
-                break;
-            }
-        }
 
-        const copy_g = JSON.parse(JSON.stringify(g));
+        const g = this.store.state.pk.gamemap;
 
-        //判断是否连通
-        if (!this.check_connecttivity(copy_g, this.rows - 2, 1, 1, this.cols - 2)) return false;
+
+        //     // new Wall(0, 0, this);
+        //     const g = [];
+        //     for (let r = 0; r < this.rows; r++) {
+        //         g[r] = [];
+        //         for (let c = 0; c < this.cols; c++) {
+        //             g[r][c] = false;
+        //         }
+        //     }
+        //     //给四周加上障碍物
+        //     for (let r = 0; r < this.rows; r++) {
+        //         g[r][0] = g[r][this.cols - 1] = true;
+        //     }
+        //     for (let c = 0; c < this.cols; c++) {
+        //         g[0][c] = g[this.rows - 1][c] = true;
+        //     }
+        //     //创建随机障碍物
+        //     for (let i = 0; i < this.inner_walls_count / 2; i++) {
+        //         for (let j = 0; j < 1000; j++) {
+        //             let r = parseInt(Math.random() * this.rows);
+        //             let c = parseInt(Math.random() * this.cols);
+        //             if (g[r][c] || g[this.rows - 1 - r][this.cols - 1 - c]) continue;
+        //             if (r == this.rows - 2 && c == 1 || r == 1 && c == this.cols - 2)
+        //                 continue;
+        //             g[r][c] = g[this.rows - 1 - r][this.cols - 1 - c] = true;
+        //             break;
+        //         }
+        //     }
+
+        //     const copy_g = JSON.parse(JSON.stringify(g));
+
+        //     //判断是否连通
+        //     if (!this.check_connecttivity(copy_g, this.rows - 2, 1, 1, this.cols - 2)) return false;
 
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
@@ -101,9 +107,11 @@ export class GameMap extends AcGameObject {
     }
 
     start() {
-        for (let i = 0; i < 1000; i++)
-            if (this.create_walls())
-                break;
+        // for (let i = 0; i < 1000; i++)
+        //     if (this.create_walls())
+        //         break;
+
+        this.create_walls();
         this.add_listening_events();
 
     }
@@ -172,11 +180,6 @@ export class GameMap extends AcGameObject {
 
             }
         }
-
-
-
-
-
         // this.ctx.fillStyle = "green";
         // this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
