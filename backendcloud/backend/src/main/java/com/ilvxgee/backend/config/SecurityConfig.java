@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,15 +17,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
+    IpAddressMatcher hasIpAddress = new IpAddressMatcher("127.0.0.1");
     @Autowired
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -36,7 +37,6 @@ public class SecurityConfig {
     ) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -44,6 +44,8 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/user/account/token/", "/user/account/register/").permitAll()
+                        .requestMatchers("/pk/start/game/").access((authentication, context) ->
+                                new AuthorizationDecision(hasIpAddress.matches(context.getRequest())))
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()
                 );

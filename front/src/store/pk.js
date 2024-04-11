@@ -22,8 +22,6 @@ export default {
         updateStatus(state, status) {
             state.status = status;
         },
-
-
         updateSocket(state, socket) {
             state.socket = socket;
         },
@@ -32,7 +30,6 @@ export default {
             state.opponent_username = opponent.username;
             state.opponent_photo = opponent.photo;
         },
-
         updateGamemap(state, game) {
             state.gamemap = game.map;
             state.a_id = game.a_id;
