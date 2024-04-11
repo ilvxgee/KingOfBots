@@ -71,16 +71,10 @@ export class Snake extends AcGameObject {
         for (let i = k; i > 0; i--) {
             this.cells[i] = JSON.parse(JSON.stringify(this.cells[i - 1]));
         }
-        if (!this.gamemap.check_valid(this.next_cell)) {//下一步操作撞了，蛇直接去世
-            this.status = "die";
-        }
-
         this.eye_direction = d
     }
 
     update_move() {
-        // this.cells[0].x += this.speed * this.timedelta / 1000;
-
         const dx = this.next_cell.x - this.cells[0].x;
         const dy = this.next_cell.y - this.cells[0].y;
         const distance = Math.sqrt(dx * dx + dy * dy);

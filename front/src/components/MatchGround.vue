@@ -11,10 +11,10 @@
             </el-col>
             <el-col :span="8">
                 <div class="selectOne">
-                    <el-select v-model="value" class="m-2" placeholder="出战方式" size="large">
+                    <!-- <el-select v-model="value" class="m-2" placeholder="出战方式" size="large">
                         <el-option value="-1" label="亲自出马" />
                         <el-option v-for="bot in bots" :key="bot.id" :label="bot.title" :value="bot.id" />
-                    </el-select>
+                    </el-select> -->
                 </div>
             </el-col>
             <el-col :span="8">
