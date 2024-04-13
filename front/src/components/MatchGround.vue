@@ -1,5 +1,5 @@
 <template>
-    <div class="matchground">
+    <div class="playground">
         <el-row :gutter="10">
             <el-col :span="8">
                 <div class="block">
@@ -11,10 +11,11 @@
             </el-col>
             <el-col :span="8">
                 <div class="selectOne">
-                    <!-- <el-select v-model="value" class="m-2" placeholder="出战方式" size="large">
-                        <el-option value="-1" label="亲自出马" />
-                        <el-option v-for="bot in bots" :key="bot.id" :label="bot.title" :value="bot.id" />
-                    </el-select> -->
+                    <el-select v-model="value" class="m-2" placeholder="出战方式" size="large">
+                        <el-option value="-1" label="亲自出马" style="width: 240px" />
+                        <el-option v-for="bot in bots" :key="bot.id" :label="bot.title" :value="bot.id"
+                            style="width: 240px" />
+                    </el-select>
                 </div>
             </el-col>
             <el-col :span="8">
@@ -27,8 +28,8 @@
             </el-col>
             <el-col :span="24">
                 <div class="pk-button">
-                    <el-button type="warning" @click="click_match_btn" round size="large">
-                        {{ match_btn_info }}</el-button>
+                    <el-button type="warning" @click="click_match_btn" round size="large">{{ match_btn_info
+                        }}</el-button>
                 </div>
             </el-col>
         </el-row>
@@ -36,50 +37,68 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useStore } from 'vuex';
+import { ref } from "vue";
+import { useStore } from "vuex";
+import $ from 'jquery'
+
 export default {
-
+    name: "MatchGround",
     setup() {
-
         const store = useStore();
         let match_btn_info = ref("开始匹配");
+        let bots = ref([]);
 
         const click_match_btn = () => {
             if (match_btn_info.value === "开始匹配") {
                 match_btn_info.value = "取消";
-
+                console.log(value.value);
                 store.state.pk.socket.send(JSON.stringify({
                     event: "start-matching",
-
-                }));
+                    bot_id: value.value,
+                }))
             } else {
                 match_btn_info.value = "开始匹配";
                 store.state.pk.socket.send(JSON.stringify({
                     event: "stop-matching",
-                }));
+                }))
             }
+        };
+
+        const refresh_bots = () => {
+            $.ajax({
+                url: ("http://127.0.0.1:3000/user/bot/getList/"),
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(resp) {
+                    bots.value = resp;
+                }
+            })
         }
+
+        refresh_bots();
+
+        const value = ref('-1')
+
         return {
             match_btn_info,
-            click_match_btn
+            click_match_btn,
+            value,
+            bots,
         }
     }
-
-
 }
 </script>
 
 <style scoped>
-div.matchground {
+div.playground {
     width: 60vw;
     height: 70vh;
     margin: 40px auto;
     background-color: rgba(50, 50, 50, 0.5);
     border-radius: 5px;
-
 }
-
 
 .user-photo {
     margin-top: 10vh;
@@ -109,7 +128,7 @@ div.matchground {
 }
 
 .selectOne {
-    width: 60%;
+    width: 240px;
     margin: 0 auto;
 }
 </style>

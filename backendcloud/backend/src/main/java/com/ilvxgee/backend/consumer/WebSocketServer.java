@@ -3,8 +3,10 @@ package com.ilvxgee.backend.consumer;
 import com.alibaba.fastjson2.JSONObject;
 import com.ilvxgee.backend.consumer.utils.Game;
 import com.ilvxgee.backend.consumer.utils.JwtAuthentication;
+import com.ilvxgee.backend.mapper.BotMapper;
 import com.ilvxgee.backend.mapper.RecordMapper;
 import com.ilvxgee.backend.mapper.UserMapper;
+import com.ilvxgee.backend.pojo.Bot;
 import com.ilvxgee.backend.pojo.User;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
@@ -28,10 +30,11 @@ public class WebSocketServer {
     private Session session = null;
     private static UserMapper userMapper;
     public static RecordMapper recordMapper;
-    private Game game = null;
-    private static RestTemplate restTemplate;
-    private final static String addPlayerUrl="http://127.0.0.1:3001/player/add/";
-    private final static String removePlayerUrl="http://127.0.0.1:3001/player/remove/";
+    public Game game = null;
+    public static RestTemplate restTemplate;
+    private static BotMapper botMapper;
+    private final static String addPlayerUrl = "http://127.0.0.1:3001/player/add/";
+    private final static String removePlayerUrl = "http://127.0.0.1:3001/player/remove/";
 
 
     @Autowired
@@ -45,65 +48,40 @@ public class WebSocketServer {
     }
 
     @Autowired
-    public void setRestTemplate(RestTemplate restTemplate){
-        WebSocketServer.restTemplate=restTemplate;
-    }
-    @OnOpen
-    public void onOpen(Session session, @PathParam("token") String token) throws IOException {
-        // 建立连接
-        this.session = session;
-        System.out.println("connected!");
-
-        Integer userId = JwtAuthentication.getUserId(token);
-
-        this.user = userMapper.selectById(userId);
-        if (this.user != null) {
-            users.put(userId, this);
-
-        } else {
-            this.session.close();
-        }
-
-        System.out.println(users);
-
-
+    public void setRestTemplate(RestTemplate restTemplate) {
+        WebSocketServer.restTemplate = restTemplate;
     }
 
-    @OnClose
-    public void onClose() {
-        System.out.println("disconnected!");
-//
-//        if (this.user != null) {
-//            users.remove(this.user.getId());
-//            matchPool.remove(this.user);
-//        }
+    @Autowired
+    public void setBotMapper(BotMapper botMapper) {
+        WebSocketServer.botMapper = botMapper;
     }
 
-    private void startMatching() {
+    private void startMatching(Integer botId) {
         System.out.println("start matching!");
-
-//        matchPool.add(this.user);
-//        while (matchPool.size() >= 2) {
-//            Iterator<User> it = matchPool.iterator();
-//            User a = it.next(), b = it.next();
-//            matchPool.remove(a);
-//            matchPool.remove(b);
-//
-//        }
-
-        MultiValueMap<String,String> data=new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("user_id", this.user.getId().toString());
         data.add("rating", this.user.getRating().toString());
-        restTemplate.postForObject(addPlayerUrl,data,String.class);
-
-
+        data.add("bot_id", botId.toString());
+//        System.out.println(botId);
+        restTemplate.postForObject(addPlayerUrl, data, String.class);
     }
 
 
-    public static void startGame(Integer aId, Integer bId) {
+    public static void startGame(Integer aId, Integer aBotID, Integer bId, Integer bBotId) {
         User a = userMapper.selectById(aId), b = userMapper.selectById(bId);
 
-        Game game = new Game(13, 14, 20, a.getId(), b.getId());
+        Bot botA = botMapper.selectById(aBotID), botB = botMapper.selectById(bBotId);
+
+        Game game = new Game(
+                13,
+                14,
+                20,
+                a.getId(),
+                botA,
+                b.getId(),
+                botB
+        );
         game.createMap();
 
 
@@ -145,23 +123,45 @@ public class WebSocketServer {
 
     private void stopMatching() {
         System.out.println("stop matching!");
-//        matchPool.remove(this.user);
-
-        MultiValueMap<String,String> data=new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("user_id", this.user.getId().toString());
-        restTemplate.postForObject(removePlayerUrl,data,String.class);
+        restTemplate.postForObject(removePlayerUrl, data, String.class);
 
 
     }
 
     private void move(int direction) {
         if (game.getPlayerA().getId().equals(user.getId())) {
-            game.setNextStepA(direction);
+            if (game.getPlayerA().getBotId().equals(-1))//亲自出马
+                game.setNextStepA(direction);
         } else if (game.getPlayerB().getId().equals(user.getId())) {
-            game.setNextStepB(direction);
+            if (game.getPlayerA().getBotId().equals(-1))//亲自出马
+                game.setNextStepB(direction);
         }
     }
+    @OnOpen
+    public void onOpen(Session session, @PathParam("token") String token) throws IOException {
+        this.session = session;
+        System.out.println("connected!");
+        Integer userId = JwtAuthentication.getUserId(token);
+        this.user = userMapper.selectById(userId);
 
+        if (this.user != null) {
+            users.put(userId, this);
+        } else {
+            this.session.close();
+        }
+
+        System.out.println(users);
+    }
+
+    @OnClose
+    public void onClose() {
+        System.out.println("disconnected!");
+        if (this.user != null) {
+            users.remove(this.user.getId());
+        }
+    }
 
     @OnMessage
     public void onMessage(String message, Session session) {//当做路由
@@ -172,7 +172,7 @@ public class WebSocketServer {
         String event = data.getString("event");
 
         if (Objects.equals("start-matching", event)) {
-            startMatching();
+            startMatching(data.getInteger("bot_id"));
         } else if ("stop-matching".equals(event)) {
             stopMatching();
         } else if ("move".equals(event)) {
@@ -196,4 +196,20 @@ public class WebSocketServer {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
