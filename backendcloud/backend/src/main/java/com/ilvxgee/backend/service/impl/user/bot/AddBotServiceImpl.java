@@ -1,5 +1,6 @@
 package com.ilvxgee.backend.service.impl.user.bot;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ilvxgee.backend.mapper.BotMapper;
 import com.ilvxgee.backend.pojo.Bot;
 import com.ilvxgee.backend.pojo.User;
@@ -19,7 +20,6 @@ public class AddBotServiceImpl implements AddBotService {
 
     @Autowired
     private BotMapper botMapper;
-
 
     @Override
     public Map<String, String> add(Map<String, String> data) {
@@ -56,6 +56,14 @@ public class AddBotServiceImpl implements AddBotService {
         }
         if (content.length() > 10000) {
             map.put("error_message", "代码长度不能超过10000");
+            return map;
+        }
+
+        QueryWrapper<Bot> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("user_id",user.getId());
+
+        if(botMapper.selectCount(queryWrapper)>=10){
+            map.put("error_message", "每个用户最多只能创建10个Bot");
             return map;
         }
         Date now = new Date();

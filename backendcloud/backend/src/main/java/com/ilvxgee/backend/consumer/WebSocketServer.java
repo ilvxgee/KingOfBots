@@ -28,7 +28,7 @@ public class WebSocketServer {
     private static final CopyOnWriteArraySet<User> matchPool = new CopyOnWriteArraySet<>();
     private User user;
     private Session session = null;
-    private static UserMapper userMapper;
+    public static UserMapper userMapper;
     public static RecordMapper recordMapper;
     public Game game = null;
     public static RestTemplate restTemplate;
@@ -132,10 +132,10 @@ public class WebSocketServer {
 
     private void move(int direction) {
         if (game.getPlayerA().getId().equals(user.getId())) {
-            if (game.getPlayerA().getBotId().equals(-1))//亲自出马
+            if (game.getPlayerA().getBotId().equals(-1))//亲自出马才接收人的输入
                 game.setNextStepA(direction);
         } else if (game.getPlayerB().getId().equals(user.getId())) {
-            if (game.getPlayerA().getBotId().equals(-1))//亲自出马
+            if (game.getPlayerB().getBotId().equals(-1))
                 game.setNextStepB(direction);
         }
     }

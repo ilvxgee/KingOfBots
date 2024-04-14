@@ -9,6 +9,7 @@ import MatchGround from "@/components/MatchGround.vue"
 import ResultBoard from "@/components/ResultBoard.vue"
 import { onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
+import { ElNotification } from 'element-plus'
 
 export default {
     components: {
@@ -46,6 +47,7 @@ export default {
                     setTimeout(() => {
                         store.commit("updateStatus", "playing");
                     }, 200);
+                    userNotice();
 
                     store.commit("updateGamemap", data.game);
 
@@ -81,7 +83,23 @@ export default {
             store.commit("updateStatus", "matching");
         });
 
+        const userNotice = () => {
+            let player_camp = (store.state.pk.a_id === parseInt(store.state.user.id)) ? "蓝" : "红";
+            let text_color = "";
+            if (player_camp === '蓝') text_color = "#0066FF";
+            else if (player_camp === '红') text_color = "#E63F00";
+            console.log(store.state.pk.a_id);
+            console.log(store.state.user.id);
+            ElNotification({
+                title: '游戏开始',
+                message: ("hi", { style: 'color: ' + text_color }, '你出生在' + player_camp + "色方"),
+                duration: 5000,
+            })
+        }
+
     }
+
+
 }
 </script>
 <style scoped></style>

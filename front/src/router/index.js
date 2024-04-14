@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView";
 import PkIndexView from "@/views/pk/PkIndexView";
 import RecordIndexView from "@/views/record/RecordIndexView";
+import RecordContentView from "@/views/record/RecordContentView";
 import RanklistIndexView from "@/views/ranklist/RanklistIndexView";
 import UserBotIndexView from "@/views/user/bot/UserBotIndexView";
 import NotFound from "@/views/error/NotFound";
@@ -34,6 +35,14 @@ const routes = [
     path: "/record/",
     name: "record_index",
     component: RecordIndexView,
+    meta: {
+      requestAuth: true,
+    }
+  },
+  {
+    path: "/record/:recordId/",
+    name: "record_content",
+    component: RecordContentView,
     meta: {
       requestAuth: true,
     }
@@ -98,11 +107,6 @@ router.beforeEach((to, from, next) => {
     next();
   }
 })
-
-
-
-
-
 
 
 
