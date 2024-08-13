@@ -6,6 +6,8 @@
         <el-menu-item index="/pk/">对战</el-menu-item>
         <el-menu-item index="/record/">对局列表</el-menu-item>
         <el-menu-item index="/ranklist/">排行榜</el-menu-item>
+        <el-menu-item index="/messageboard/">留言板</el-menu-item>
+
 
         <div class="flex-grow" />
         <el-sub-menu index="6" class="el-sub-menu" v-if="$store.state.user.is_login">

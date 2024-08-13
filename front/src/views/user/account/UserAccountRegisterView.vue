@@ -14,7 +14,7 @@
             <div class="error-message" style="height: 12px;  line-height: 0.1;text-align: center;">{{ error_message }}
             </div>
             <div class="container">
-                <el-button type="primary" @click.prevent="register" style="width: 200px; ">登录</el-button>
+                <el-button type="primary" @click.prevent="register" style="width: 200px; ">注册</el-button>
             </div>
         </el-form>
     </ContentField>
@@ -39,7 +39,7 @@ export default {
 
         const register = () => {
             $.ajax({
-                url: "http://127.0.0.1:3000/user/account/register/",
+                url: "http://127.0.0.1:3000/api/user/account/register/",
                 type: "post",
                 data: {
                     username: username.value,

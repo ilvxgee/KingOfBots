@@ -13,7 +13,7 @@ public class GetBotListController {
     @Autowired
     private GetBotListService getBotListService;
 
-    @GetMapping("/user/bot/getList/")
+    @GetMapping("/api/user/bot/getList/")
 
     public List<Bot> getBotList() {
         return getBotListService.getBotList();
