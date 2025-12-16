@@ -28,6 +28,9 @@
     "eslint-plugin-vue": "^8.0.3",
     "file-loader": "^6.2.0"
   },
+  "resolutions": {
+    "@achrinza/node-ipc": "9.2.9"
+  },
   "eslintConfig": {
     "root": true,
     "env": {
